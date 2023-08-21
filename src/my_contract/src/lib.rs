@@ -1,8 +1,9 @@
 #![no_std]
 #![allow(non_upper_case_globals)]
 
-use shared::DataType;
 use soroban_sdk::{Env, String, symbol_short, Symbol, contract, contractimpl};
+
+type DataType = soroban_sdk::String;
 
 const DATA: Symbol = symbol_short!("DATA");
 
