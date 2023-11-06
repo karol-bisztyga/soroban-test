@@ -6,9 +6,9 @@ pub struct HelloContract;
 
 #[contractimpl]
 impl HelloContract {
-    pub fn add(env: Env, a: u32, b: u32) -> u32 {
-        a + b
-    }
+  pub fn add(_env: Env, a: u32, b: u32) -> u32 {
+    a + b
+  }
 }
 
 mod test;
