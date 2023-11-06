@@ -2,16 +2,13 @@
 
 set -e
 
-# build contracts
-soroban contract build
+PUBLIC_KEY=$(cat .data/public_key)
+SECRET_KEY=$(cat .data/secret_key)
 
-# deploy contracts
-ID=$(soroban contract deploy --wasm target/wasm32-unknown-unknown/release/my_contract.wasm --source SCZ7SY5XLBYHWMVRYQXDFMXL273L5VOIKGAM7UXJARECYKRYICZLOWHM --rpc-url http://localhost:8000/soroban/rpc --network-passphrase 'Standalone Network ; February 2017')
+RPC_URL="https://rpc-futurenet.stellar.org:443"
 
-echo "deployed: $ID"
-VAL=$(soroban contract invoke --id $ID --source SCZ7SY5XLBYHWMVRYQXDFMXL273L5VOIKGAM7UXJARECYKRYICZLOWHM --rpc-url http://localhost:8000/soroban/rpc --network-passphrase 'Standalone Network ; February 2017' -- get_val)
+NETWORK_PASS="Test SDF Future Network ; October 2022"
 
-echo "VAL (should be 'NONE'): $VAL"
-soroban contract invoke --id $ID --source SCZ7SY5XLBYHWMVRYQXDFMXL273L5VOIKGAM7UXJARECYKRYICZLOWHM --rpc-url http://localhost:8000/soroban/rpc --network-passphrase 'Standalone Network ; February 2017' -- set_val --new_val hello!
-VAL=$(soroban contract invoke --id $ID --source SCZ7SY5XLBYHWMVRYQXDFMXL273L5VOIKGAM7UXJARECYKRYICZLOWHM --rpc-url http://localhost:8000/soroban/rpc --network-passphrase 'Standalone Network ; February 2017' -- get_val)
-echo "VAL (should be 'hello!'): $VAL"
+CONTRACT_ID=$(cat .data/contract_id)
+
+soroban contract invoke --id $CONTRACT_ID --source $SECRET_KEY --rpc-url $RPC_URL --network-passphrase "${NETWORK_PASS}" -- add --a 12 --b 3
