@@ -37,6 +37,10 @@ Here we upload some data to the blockchain and once we want to fetch it, it fail
 This just runs some calculations using the "trust" data.
 The point here is that if we go for too much calculations, the transaction will hang forever.
 
+Important thing to note here is that we do not exceed the limit of CPU isntructions (100_000_000 based on https://soroban.stellar.org/docs/fundamentals-and-concepts/fees-and-metering#resource-fee).
+I know once this limit is exceeeded, the transaction will hang forever.
+I performed transactions that would have 80_000_000 - 96_000_000 and still hang (die).
+
 ## Note
 
 I realize that Soroban has some constraints and we cannot run everything there. The point is, these constraints are too strict for us to successfully implement desired functionalities.
