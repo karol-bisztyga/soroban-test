@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
+soroban_decimal_numbers = "0.1.2"
 soroban-sdk = { version = "20.0.0-rc2" }
 
 [dev_dependencies]

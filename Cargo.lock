@@ -633,6 +633,7 @@ name = "my-contract"
 version = "0.0.0"
 dependencies = [
  "soroban-sdk",
+ "soroban_decimal_numbers",
 ]
 
 [[package]]
@@ -1101,6 +1102,12 @@ dependencies = [
  "wasmi_core",
  "wasmparser-nostd",
 ]
+
+[[package]]
+name = "soroban_decimal_numbers"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f3200c7c9328eb132524f05529b5466ec5044fd193b3913f61cdaf22e0e031a"
 
 [[package]]
 name = "spin"

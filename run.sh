@@ -2,4 +2,4 @@
 
 set -e
 
-node js_side
+node js_side "$1" "$2"

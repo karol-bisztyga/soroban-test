@@ -1,10 +1,10 @@
 const { callContract, argParseInt, argParseMap, argParseString, argParseVec } = require('./call_contract');
 const fs = require('fs');
 
-const secretKey = fs.readFileSync('.data/secret_key').toString().replace(/\r?\n|\r/g, "");
-const contractId = fs.readFileSync('.data/contract_id').toString().replace(/\r?\n|\r/g, "");
+const secretKey = fs.readFileSync('.data/secret_key').toString().replace(/\r?\n|\r/g, '');
+const contractId = fs.readFileSync('.data/contract_id').toString().replace(/\r?\n|\r/g, '');
 
-const mapRepro = async () => {
+const mapRepro = async (succeeding) => {
   let result = null;
   // console.log('calling add');
   // result = await callContract(secretKey, contractId, 'add', argParseInt(6), argParseInt(7));
@@ -18,10 +18,14 @@ const mapRepro = async () => {
     'jn5CIos0YBtfaVDC28mgzn': 4,
     'jn5CIos0YBtfaVDC28mh5w': 3,
     'jn5CIos0YBtfaVDC28mh3t': 1,
-    // uncomment one of the items below to fail the transaction
+    // add one of the items below to fail the transaction
     // 'JZNJ190x24zgFxN3aQJJ0M': 4,
     // 'JZNJ190x24zgFxN3aQIr7p': 9,
   }
+  if (!succeeding) {
+    map['JZNJ190x24zgFxN3aQJJ0M'] = 4;
+  }
+
   console.log('calling sum_map', map);
   result = await callContract(secretKey, contractId, 'sum_map', argParseMap(map, argParseString, argParseInt));
   console.log('result of sum_map', result);
@@ -33,7 +37,7 @@ const mapRepro = async () => {
       HostError: Error(Value, InternalError)
       
       Event log (newest first):
-         0: [Diagnostic Event] topics:[error, Error(Value, InternalError)], data:"failed to convert ScVal to host value"
+         0: [Diagnostic Event] topics:[error, Error(Value, InternalError)], data:'failed to convert ScVal to host value'
       
       Backtrace (newest first):
          0: <core::iter::adapters::map::Map<I,F> as core::iter::traits::iterator::Iterator>::try_fold
@@ -52,11 +56,11 @@ const mapRepro = async () => {
 
 };
 
-const trustRepro = async () => {
+const setupTrust = async (succeeding) => {
   await callContract(
     secretKey,
     contractId,
-    "clear_trust_map",
+    'clear_trust_map',
   );
 
   let data = fs.readFileSync('js_side/data/trust.json').toString();
@@ -69,7 +73,7 @@ const trustRepro = async () => {
 
   let counter = 0;
   let size = Object.keys(parsedResult).length;
-  let limit = null; // 3;
+  let limit = (succeeding) ? 3 : null;
 
   /*
   if you set a small limit (like 3), everything works, when you remove the limit, you get 23 invokations of set_trust_map_for_user_vec
@@ -112,22 +116,58 @@ const trustRepro = async () => {
     await callContract(
       secretKey,
       contractId,
-      "set_trust_map_for_user_vec",
+      'set_trust_map_for_user_vec',
       argParseString(userId),
       argParseVec(parsedResult[userId], argParseString),
     );
   }
+}
+
+const trustRepro = async () => {
   console.log('setting trust map done, fetching back');
 
   let fetched = await callContract(
     secretKey,
     contractId,
-    "get_trust_map",
+    'get_trust_map',
   );
   console.log('fetched trust map', fetched);
 }
 
+const pageRankRepro = async (succeeding) => {
+  /*
+    calculate_page_rank_twice just runs the algorithm twice,
+    we do not really do that but that just indicates more operations,
+    we need such a power in other cases to make the system work
+  */
+  let result = await callContract(
+    secretKey,
+    contractId,
+    succeeding ? 'calculate_page_rank' : 'calculate_page_rank_twice',
+  );
+
+  console.log('page rank result', result);
+}
+
 (async () => {
-  // await mapRepro();
-  await trustRepro();
+  const args = process.argv.splice(2);
+  const option = args[0];
+  const succeeding = parseInt(args[1]);
+
+  const availableOptions = ['map', 'trust', 'page_rank'];
+  switch (option) {
+    case 'map':
+      await mapRepro(succeeding);
+      break;
+    case 'trust':
+      await setupTrust(succeeding);
+      await trustRepro();
+      break;
+    case 'page_rank':
+      await setupTrust(false);
+      await pageRankRepro(succeeding);
+      break;
+    default:
+      console.log('worng option', option,', available options:', availableOptions);
+  }
 })();
