@@ -56,7 +56,7 @@ const mapRepro = async (succeeding) => {
 
 };
 
-const setupTrust = async (succeeding) => {
+const setupData = async (succeeding) => {
   await callContract(
     secretKey,
     contractId,
@@ -118,7 +118,7 @@ const setupTrust = async (succeeding) => {
   }
 }
 
-const trustRepro = async () => {
+const getDataTooBigRepro = async () => {
   console.log('setting trust map done, fetching back');
 
   let fetched = await callContract(
@@ -129,13 +129,13 @@ const trustRepro = async () => {
   console.log('fetched trust map', fetched);
 }
 
-const pageRankRepro = async (succeeding) => {
+const tooManyCalculationsRepro = async (succeeding) => {
   /*
     calculate_page_rank_twice just runs the algorithm twice,
     we do not really do that but that just indicates more operations,
     we need such a power in other cases to make the system work
   */
- let result;
+  let result;
   if (succeeding) {
     result = await callContract(
       secretKey,
@@ -155,70 +155,24 @@ const pageRankRepro = async (succeeding) => {
 }
 
 (async () => {
-  // const args = process.argv.splice(2);
-  // const option = args[0];
-  // const succeeding = parseInt(args[1]);
+  const args = process.argv.splice(2);
+  const option = args[0];
+  const succeeding = parseInt(args[1]);
 
-  // const availableOptions = ['map', 'trust', 'page_rank'];
-  // switch (option) {
-  //   case 'map':
-  //     await mapRepro(succeeding);
-  //     break;
-  //   case 'trust':
-  //     await setupTrust(succeeding);
-  //     await trustRepro();
-  //     break;
-  //   case 'page_rank':
-  //     await setupTrust(true);
-  //     await pageRankRepro(succeeding);
-  //     break;
-  //   default:
-  //     console.log('worng option', option, ', available options:', availableOptions);
-  // }
-
-  // change trust data
-  let data = fs.readFileSync('js_side/data/trust.json').toString();
-  data = JSON.parse(data);
-  console.log(data);
-
-  (() => {
-    const crypto = require('crypto');
-    const oldToNewIds = {};
-    for (let oldId in data) {
-      if (!oldToNewIds[oldId]) {
-        const newId = crypto.randomBytes(32).toString('hex');
-        oldToNewIds[oldId] = newId;
-      }
-      for (id of data[oldId]) {
-        if (!oldToNewIds[id]) {
-          const newId = crypto.randomBytes(32).toString('hex');
-          oldToNewIds[id] = newId;
-        }
-      }
-    }
-
-    const newData = {};
-    for (let trustingId in data) {
-      newData[oldToNewIds[trustingId]] = [];
-      for (trustedId of data[trustingId]) {
-        newData[oldToNewIds[trustingId]].push(oldToNewIds[trustedId]);
-      }
-    }
-    console.log(newData);
-
-    let set1 = new Set();
-    for (let key in data) {
-      set1.add(data[key].length);
-    }
-    console.log(set1);
-
-    let set2 = new Set();
-    for (let key in newData) {
-      set2.add(newData[key].length);
-    }
-    console.log(set2);
-
-    console.log(JSON.stringify(newData));
-  })();
-
+  const availableOptions = ['map', 'get_data_too_big', 'too_many_calculations'];
+  switch (option) {
+    case 'map':
+      await mapRepro(succeeding);
+      break;
+    case 'get_data_too_big':
+      await setupData(succeeding);
+      await getDataTooBigRepro();
+      break;
+    case 'too_many_calculations':
+      await setupData(true);
+      await tooManyCalculationsRepro(succeeding);
+      break;
+    default:
+      console.log('worng option', option, ', available options:', availableOptions);
+  }
 })();

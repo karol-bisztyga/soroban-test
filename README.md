@@ -16,8 +16,8 @@ As a second argument you should pass `0` or `1` depending if you want the operat
 ./run.sh map 1 # this will successfully run map operations
 ./run.sh map 0 # this will reproduce the map issue
 
-./run.sh trust 1 # this will successfully run the "trust" operations
-./run.sh trust 0 # this will reproduce the "trust" issue
+./run.sh get_data_too_big 1 # this will successfully run the "get_data_too_big" operations
+./run.sh get_data_too_big 0 # this will reproduce the "get_data_too_big" issue
 
 # and so on...
 ```
@@ -28,13 +28,12 @@ As a second argument you should pass `0` or `1` depending if you want the operat
 
 Here we try to pass a map from JS to Soroban. For some values it works and for some it does not with no clear pattern what really causes the problem.
 
-#### Trust
+#### Get data too big
 
 Here we upload some data to the blockchain and once we want to fetch it, it fails if the data's too big.
 
-#### Page Rank
+#### Too many calculations
 
-This just runs some calculations using the "trust" data.
 The point here is that if we go for too much calculations, the transaction will hang forever.
 
 Important thing to note here is that we do not exceed the limit of CPU isntructions (100_000_000 based on https://soroban.stellar.org/docs/fundamentals-and-concepts/fees-and-metering#resource-fee).
