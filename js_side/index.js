@@ -65,14 +65,9 @@ const setupTrust = async (succeeding) => {
 
   let data = fs.readFileSync('js_side/data/trust.json').toString();
   data = JSON.parse(data);
-  let parsedResult = {};
-  for (let item of data.result) {
-    parsedResult[item.trusting_user._ref] = item.trusted_users.map((user) => user._ref);
-  }
-  console.log(parsedResult);
 
   let counter = 0;
-  let size = Object.keys(parsedResult).length;
+  let size = Object.keys(data).length;
   let limit = (succeeding) ? 3 : null;
 
   /*
@@ -106,7 +101,7 @@ const setupTrust = async (succeeding) => {
         at async /Users/karolbisztyga/Desktop/workspace/stellar/soroban-test/js_side/index.js:100:3
   */
 
-  for (userId in parsedResult) {
+  for (const userId in data) {
     ++counter;
     console.log('----- calling set_trust_map_for_user_vec', counter, '/', size);
     if (limit && counter > limit) {
@@ -118,7 +113,7 @@ const setupTrust = async (succeeding) => {
       contractId,
       'set_trust_map_for_user_vec',
       argParseString(userId),
-      argParseVec(parsedResult[userId], argParseString),
+      argParseVec(data[userId], argParseString),
     );
   }
 }
@@ -160,24 +155,70 @@ const pageRankRepro = async (succeeding) => {
 }
 
 (async () => {
-  const args = process.argv.splice(2);
-  const option = args[0];
-  const succeeding = parseInt(args[1]);
+  // const args = process.argv.splice(2);
+  // const option = args[0];
+  // const succeeding = parseInt(args[1]);
 
-  const availableOptions = ['map', 'trust', 'page_rank'];
-  switch (option) {
-    case 'map':
-      await mapRepro(succeeding);
-      break;
-    case 'trust':
-      await setupTrust(succeeding);
-      await trustRepro();
-      break;
-    case 'page_rank':
-      await setupTrust(true);
-      await pageRankRepro(succeeding);
-      break;
-    default:
-      console.log('worng option', option, ', available options:', availableOptions);
-  }
+  // const availableOptions = ['map', 'trust', 'page_rank'];
+  // switch (option) {
+  //   case 'map':
+  //     await mapRepro(succeeding);
+  //     break;
+  //   case 'trust':
+  //     await setupTrust(succeeding);
+  //     await trustRepro();
+  //     break;
+  //   case 'page_rank':
+  //     await setupTrust(true);
+  //     await pageRankRepro(succeeding);
+  //     break;
+  //   default:
+  //     console.log('worng option', option, ', available options:', availableOptions);
+  // }
+
+  // change trust data
+  let data = fs.readFileSync('js_side/data/trust.json').toString();
+  data = JSON.parse(data);
+  console.log(data);
+
+  (() => {
+    const crypto = require('crypto');
+    const oldToNewIds = {};
+    for (let oldId in data) {
+      if (!oldToNewIds[oldId]) {
+        const newId = crypto.randomBytes(32).toString('hex');
+        oldToNewIds[oldId] = newId;
+      }
+      for (id of data[oldId]) {
+        if (!oldToNewIds[id]) {
+          const newId = crypto.randomBytes(32).toString('hex');
+          oldToNewIds[id] = newId;
+        }
+      }
+    }
+
+    const newData = {};
+    for (let trustingId in data) {
+      newData[oldToNewIds[trustingId]] = [];
+      for (trustedId of data[trustingId]) {
+        newData[oldToNewIds[trustingId]].push(oldToNewIds[trustedId]);
+      }
+    }
+    console.log(newData);
+
+    let set1 = new Set();
+    for (let key in data) {
+      set1.add(data[key].length);
+    }
+    console.log(set1);
+
+    let set2 = new Set();
+    for (let key in newData) {
+      set2.add(newData[key].length);
+    }
+    console.log(set2);
+
+    console.log(JSON.stringify(newData));
+  })();
+
 })();
