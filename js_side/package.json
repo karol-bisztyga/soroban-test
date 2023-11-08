@@ -1,0 +1,17 @@
+{
+  "name": "js_side",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sanity/client": "^6.4.12",
+    "groq": "^3.17.0",
+    "soroban-client": "^1.0.0-beta.4"
+  }
+}
