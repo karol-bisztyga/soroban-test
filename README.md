@@ -4,7 +4,14 @@ Here I reproduced some problems I encountered when working with Soroban.
 
 ## Usage
 
-In order to run the tests, you should first run
+In order to run the tests, you need to have these files:
+```
+.data/public_key
+.data/secret_key
+```
+They must contain keys of a valid futurenet account.
+
+Once you have this, you should run
 ```
 ./build.sh
 ```
