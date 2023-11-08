@@ -3,8 +3,8 @@
 mod page_rank;
 mod types;
 
-use soroban_sdk::{contract, contractimpl, contracttype, Env, Map, String, Vec};
 use page_rank::Rank;
+use soroban_sdk::{contract, contractimpl, contracttype, Env, Map, String, Vec};
 
 #[derive(Clone)]
 #[contracttype]
@@ -87,12 +87,27 @@ impl HelloContract {
     if trust_map.is_empty() {
       return Map::new(&env);
     }
-    let rank = Rank::from_pages(&env, trust_map.clone() );
+    let rank = Rank::from_pages(&env, trust_map.clone());
     let mut result = None;
     for _ in 0..n {
       result = Some(rank.calculate(&env));
     }
     result.unwrap()
+  }
+
+  pub fn set_data(_env: Env, _data: Vec<String>) {
+    // silence is golden
+  }
+
+  pub fn get_data(env: Env, n: u32) -> Vec<String> {
+    let mut result = Vec::new(&env);
+    for i in 0..n {
+      result.push_back(String::from_slice(
+        &env,
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      ));
+    }
+    result
   }
 }
 

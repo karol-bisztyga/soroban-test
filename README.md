@@ -35,9 +35,9 @@ As a second argument you should pass `0` or `1` depending if you want the operat
 
 Here we try to pass a map from JS to Soroban. For some values it works and for some it does not with no clear pattern what really causes the problem.
 
-#### Get data too big
+#### get/set data too big
 
-Here we upload some data to the blockchain and once we want to fetch it, it fails if the data's too big.
+Here we send some data to the blockchain or fetch somedata from it and once we want to fetch it, it fails if the data's too big.
 
 #### Too many calculations
 

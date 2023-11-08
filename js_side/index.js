@@ -118,15 +118,29 @@ const setupData = async (succeeding) => {
   }
 }
 
-const getDataTooBigRepro = async () => {
-  console.log('setting trust map done, fetching back');
-
-  let fetched = await callContract(
+const setDataTooBigRepro = async (succeeding) => {
+  const crypto = require('crypto');
+  const data = [];
+  const size = succeeding ? 100 : 1000;
+  for (let i = 0; i < size; ++i) {
+    data.push(crypto.randomBytes(100).toString('hex'));
+  }
+  await callContract(
     secretKey,
     contractId,
-    'get_trust_map',
+    'set_data',
+    argParseVec(data, argParseString),
   );
-  console.log('fetched trust map', fetched);
+}
+
+const getDataTooBigRepro = async (succeeding) => {
+  const result = await callContract(
+    secretKey,
+    contractId,
+    'get_data',
+    argParseInt(succeeding ? 10 : 1000),
+  );
+  console.log(result.length);
 }
 
 const tooManyCalculationsRepro = async (succeeding) => {
@@ -159,14 +173,16 @@ const tooManyCalculationsRepro = async (succeeding) => {
   const option = args[0];
   const succeeding = parseInt(args[1]);
 
-  const availableOptions = ['map', 'get_data_too_big', 'too_many_calculations'];
+  const availableOptions = ['map', 'set_data_too_big', 'get_data_too_big', 'too_many_calculations'];
   switch (option) {
     case 'map':
       await mapRepro(succeeding);
       break;
+    case 'set_data_too_big':
+      await setDataTooBigRepro(succeeding);
+      break;
     case 'get_data_too_big':
-      await setupData(succeeding);
-      await getDataTooBigRepro();
+      await getDataTooBigRepro(succeeding);
       break;
     case 'too_many_calculations':
       await setupData(true);
