@@ -140,11 +140,21 @@ const pageRankRepro = async (succeeding) => {
     we do not really do that but that just indicates more operations,
     we need such a power in other cases to make the system work
   */
-  let result = await callContract(
-    secretKey,
-    contractId,
-    succeeding ? 'calculate_page_rank' : 'calculate_page_rank_twice',
-  );
+ let result;
+  if (succeeding) {
+    result = await callContract(
+      secretKey,
+      contractId,
+      'calculate_page_rank',
+    );
+  } else {
+    result = await callContract(
+      secretKey,
+      contractId,
+      'calculate_page_rank_n_times',
+      argParseInt(40),
+    );
+  }
 
   console.log('page rank result', result);
 }
@@ -164,10 +174,10 @@ const pageRankRepro = async (succeeding) => {
       await trustRepro();
       break;
     case 'page_rank':
-      await setupTrust(false);
+      await setupTrust(true);
       await pageRankRepro(succeeding);
       break;
     default:
-      console.log('worng option', option,', available options:', availableOptions);
+      console.log('worng option', option, ', available options:', availableOptions);
   }
 })();

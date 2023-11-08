@@ -82,25 +82,17 @@ impl HelloContract {
     page_rank_result
   }
 
-  pub fn calculate_page_rank_twice(env: Env) -> Map<String, (u32, u32)> {
+  pub fn calculate_page_rank_n_times(env: Env, n: u32) -> Map<String, (u32, u32)> {
     let trust_map = HelloContract::get_trust_map(env.clone());
-    let len = trust_map.len();
-    let page_rank_result = match len {
-      0 => Map::new(&env),
-      _ => {
-        let rank = Rank::from_pages(&env, trust_map.clone() );
-        rank.calculate(&env)
-      }
-    };
-    let page_rank_result = match len {
-      0 => Map::new(&env),
-      _ => {
-        let rank = Rank::from_pages(&env, trust_map);
-        rank.calculate(&env)
-      }
-    };
-
-    page_rank_result
+    if trust_map.is_empty() {
+      return Map::new(&env);
+    }
+    let rank = Rank::from_pages(&env, trust_map.clone() );
+    let mut result = None;
+    for _ in 0..n {
+      result = Some(rank.calculate(&env));
+    }
+    result.unwrap()
   }
 }
 

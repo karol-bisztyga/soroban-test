@@ -41,6 +41,8 @@ Important thing to note here is that we do not exceed the limit of CPU isntructi
 I know once this limit is exceeeded, the transaction will hang forever.
 I performed transactions that would have 80_000_000 - 96_000_000 and still hang (die).
 
+In this example the cpu instructions value is 86_828_462 and the transaction hangs indefinitely.
+
 ## Note
 
 I realize that Soroban has some constraints and we cannot run everything there. The point is, these constraints are too strict for us to successfully implement desired functionalities.
